@@ -1,3 +1,4 @@
+#include "pch.h"
 #include <time.h>
 #include <iostream>
 #include <cstring>
@@ -5,7 +6,7 @@
 
 using namespace std;
 
-enum {max_arr = 16};
+enum { max_arr = 17, max_arr_res = 68};
 
 void Randomize(char Arr[]) {
     int wA = 0;
@@ -36,32 +37,17 @@ void out(mas *p) {
     cout << endl;
 }
 
-bool id(mas *p, char a){
+bool check(mas *p, char a){
     while(p != nullptr && p->a != a){
         p = p->next;
     }
-    if(p == nullptr) return false; else return true;
-}
-
-void first(char a[17], char res[68]) {
-    bool flag;
-    for (int i = 0; a[i] != '\0'; i++) {
-        flag = false;
-        for (int i1 = 0; res[i1] != '\0'; i1++) {
-            if (a[i] == res[i1]) {
-                flag = true;
-                i1 = 66;
-            }
-        }
-        if (flag == false) {
-
-        }
-    }
+	//if(p == nullptr) return false; else return true;
+	return (p) ? true : false;
 }
 
 int main() {
     srand(time(nullptr));
-    char a[max_arr] = {}, b[max_arr] = {}, c[max_arr] = {}, d[max_arr] = {}, res_1[68] = {};
+    char a[max_arr] = {}, b[max_arr] = {}, c[max_arr] = {}, d[max_arr] = {}, res_1[max_arr_res] = {};
     char U[] = {"123456789ABCDEF"};
     /*std::cin.getline(a, 16,'\n');
     std::cin.getline(b, 16,'\n');
@@ -134,32 +120,53 @@ int main() {
 
     cout << "Result array: " << res_1 << endl;
 
+	mas *A = new mas(a[0]);
+	mas *B = new mas(b[0]);
+	mas *C = new mas(c[0]);
+	mas *D = new mas(d[0]);
+
+	for (int i = 1; a[i] != '\0'; i++) {
+		A = new mas(a[i], A);
+	}
+	
+	for (int i = 1; b[i] != '\0'; i++) {
+		B = new mas(b[i], B);
+	}
+
+	for (int i = 1; c[i] != '\0'; i++) {
+		C = new mas(c[i], C);
+	}
+
+	for (int i = 1; d[i] != '\0'; i++) {
+		D = new mas(d[i], D);
+	}
+
 
     cout << "Array time = " << t / 1000.0 << endl;
 
     cout << "Work with list" << endl;
     t1 = clock();
-    for(int i = 0; a[i] != '\0'; i++){ //1.1 list;
-        res = new mas(a[i], res);
+    for(A; A != nullptr; A = A->next){ //1.1 list;
+        res = new mas(A->a, res);
     }
 
-    for(int i = 0; b[i] != '\0'; i++) {
-        if(!id(res, b[i])){
-            res = new mas(b[i], res);
+    for(B; B!= nullptr; B = B->next) {
+        if(!check(res, B->a)){
+            res = new mas(B->a, res);
         }
     }
 
-    for(int i = 0; c[i] != '\0'; i++) {
-        if(!id(res, c[i])){
-            res = new mas(c[i], res);
-        }
-    }
+	for (C; C != nullptr; C = C->next) {
+		if (!check(res, C->a)) {
+			res = new mas(C->a, res);
+		}
+	}
 
-    for(int i = 0; d[i] != '\0'; i++) {
-        if(!id(res, d[i])){
-            res = new mas(d[i], res);
-        }
-    }
+	for (D; D != nullptr; D = D->next) {
+		if (!check(res, D->a)) {
+			res = new mas(D->a, res);
+		}
+	}
     t2 = clock();
     t = t2 - t1;
     cout << "Result list: ";
@@ -168,11 +175,11 @@ int main() {
     cout << "List time = " << t / 1000.0 << endl;
     cout << "Work with Vector" << endl;
 
-    bool vA[max_arr];
-    bool vB[max_arr];
-    bool vC[max_arr];
-    bool vD[max_arr];
-    bool vO[max_arr];
+    bool vA[max_arr - 1];
+    bool vB[max_arr - 1];
+    bool vC[max_arr - 1];
+    bool vD[max_arr - 1];
+    bool vO[max_arr - 1];
 
     t1 = clock();
 
@@ -184,11 +191,11 @@ int main() {
         vC[c[i] <= '9' ? c[i] + '0' : c[i] + 'A' - 10] = true;
     for (int i = 0; d[i]; i++)
         vD[d[i] <= '9' ? d[i] + '0' : d[i] + 'A' - 10] = true;
-    for (int i = 0; i < max_arr; i++) {
+    for (int i = 0; i < max_arr - 1; i++) {
         vO[i] = vA[i] || vB[i] || vC[i] || vD[i];
     }
 
-    for (int i = 0, k = 0; i < max_arr; i++)
+    for (int i = 0, k = 0; i < max_arr - 1; i++)
         if (vO[i])
             res_1[k++] = (char)(i <= 9 ? i + '0' : i + 'A' - 10);
 
@@ -203,7 +210,7 @@ int main() {
 
     delete res;
 
-    //std::cin.get();
+    std::cin.get();
 
     return 0;
 }
