@@ -5,7 +5,7 @@
 
 using namespace std;
 
-enum { max_arr = 17, max_arr_res = 68 };
+enum { max_arr = 17, max_arr_res = 68, experiment  = 300000};
 
 void Randomize(char Arr[]) {
 	int wA = 0;
@@ -40,7 +40,6 @@ bool check(mas *p, char a) {
 	while (p != nullptr && p->a != a) {
 		p = p->next;
 	}
-	//if(p == nullptr) return false; else return true;
 	return (p) ? true : false;
 }
 
@@ -58,7 +57,6 @@ int main() {
 	Randomize(b);
 	Randomize(c);
 	Randomize(d);
-	mas *res = nullptr;
 
 	cout << "Generated array A: ";
 	cout << a << endl;
@@ -75,7 +73,7 @@ int main() {
 	int k = 0; // 1.1 array;
 	bool flag;
 	unsigned long t1 = clock();
-	for (int i = 0; i < 2000000; i++) {
+	for (int i = 0; i < experiment; i++) {
 		for (int i = 0; a[i] != '\0'; i++) {
 			res_1[i] = a[i];
 			k++;
@@ -123,10 +121,13 @@ int main() {
 
 	cout << "Result array: " << res_1 << endl;
 
+	cout << "Array time = " << t << endl;
+
 	mas *A = new mas(a[0]);
 	mas *B = new mas(b[0]);
 	mas *C = new mas(c[0]);
 	mas *D = new mas(d[0]);
+	mas *res = nullptr;
 
 
 	for (int i = 1; a[i] != '\0'; i++) {
@@ -145,14 +146,21 @@ int main() {
 		D = new mas(d[i], D);
 	}
 
-
-	cout << "Array time = " << t / 1000.0 << endl;
-
 	// - - - - - - - - LIST - - - - - - - - - - - - 
+	mas *delA = A;
+	mas *delB = B;
+	mas *delC = C;
+	mas *delD = D;
 
 	cout << "Work with list" << endl;
 	t1 = clock();
-	for (int i = 0; i < 2000000; i++) {
+	for (int i = 0; i < experiment; i++) {
+		A = delA;
+		B = delB;
+		C = delC;
+		D = delD;
+		res = nullptr;
+
 		for (A; A != nullptr; A = A->next) { //1.1 list;
 			res = new mas(A->a, res);
 		}
@@ -174,13 +182,14 @@ int main() {
 				res = new mas(D->a, res);
 			}
 		}
+		if(i != experiment - 1) delete res;
 	}
 	t2 = clock();
 	t = t2 - t1;
 	cout << "Result list: ";
 	out(res);
 
-	cout << "List time = " << t / 1000.0 << endl;
+	cout << "List time = " << t << endl;
 
 	// - - - - - - - - - - BOOL ARRAYS - - - - - - - - - - 
 
@@ -204,22 +213,21 @@ int main() {
 		vO[i] = vA[i] || vB[i] || vC[i] || vD[i];
 	}
 	t1 = clock();
-	for (int i = 0; i < 2000000; i++) {
+	for (int i = 0; i < experiment; i++) {
 		for (int i = 0; i < max_arr - 1; i++) {
 			vO[i] = vA[i] || vB[i] || vC[i] || vD[i];
 		}
-		for (int i = 0, k = 0; i < max_arr - 1; i++)
-			if (vO[i])
-				res_1[k++] = (char)(i <= 9 ? i + '0' : i + 'A' - 10);
 	}
 	t2 = clock();
 	t = t2 - t1;
-
+	for (int i = 0, k = 0; i < max_arr - 1; i++)
+		if (vO[i]) res_1[k++] = (char)(i <= 9 ? i + '0' : i + 'A' - 10);
+	
 	cout << "Result bool array: ";
 	for (int i = 0;res_1[i] != '\0'; i++) {
 		cout << res_1[i];
 	}
-	cout << endl << "Bool array time: " << t / 1000.0 << endl;
+	cout << endl << "Bool array time: " << t << endl;
 
 	//- - - - - - - - - - -MACHINE WORD - - - - - - - - - 
 
@@ -243,22 +251,25 @@ int main() {
 	cout << "Result: " << endl << "wA: " << wA << "\n" << "wB: " << wB << "\n" << "wC: " << wC << "\n" << "wD: " << wD << "\n";
 
 	t1 = clock();
-	for (int i = 0; i < 2000000; i++) {
+	for (int i = 0; i < experiment; i++) {
 		wO = wA | wB | wC | wD;
-		for (int i = 0, k = 0; i < max_arr - 1; i++)
-			if ((wO >> i) & 1)
-				res_1[k++] = (char)(i <= 9 ? i + '0' : i + 'A' - 10);
 	}
 	t2 = clock();
+	for (int i = 0, k = 0; i < max_arr - 1; i++)
+		if ((wO >> i) & 1) res_1[k++] = (char)(i <= 9 ? i + '0' : i + 'A' - 10);
 	t = t2 - t1;
 	cout << "Result Machine word: ";
 	for (int i = 0;res_1[i] != '\0'; i++) {
 		cout << res_1[i];
 	}
 
-	cout << endl << "Machine word time: " << t / 1000.0 << endl;
+	cout << endl << "Machine word time: " << t << endl;
 
 	delete res;
+	delete delA;
+	delete delB;
+	delete delC;
+	delete delD;
 
 	std::cin.get();
 
